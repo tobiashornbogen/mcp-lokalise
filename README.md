@@ -3,6 +3,11 @@
 A Minimal Command-line Program (MCP) server for adding translation keys to your Lokalise projects, designed for integration with [Cursor](https://www.cursor.so/) or standalone use.
 
 ---
+## 🖼️ MCP Flow Diagram
+
+![MCP Flow](https://i.postimg.cc/K32C6Nhw/Screenshot-2025-06-24-at-3-40-51-AM.png)
+
+*This diagram illustrates the Model Context Protocol (MCP) flow between Cursor, your MCP server, and Lokalise.* 
 
 ## ⚡️ Usage (Quick Start with Cursor MCP)
 
@@ -49,9 +54,12 @@ This tool takes these inputs:
   - **platforms** (optional): The platforms this key applies to (e.g., `web`, `ios`)
 
 **Example:**
-> I want to add two keys, hello and bye, with default values Hello and Goodbye, both for the web platform.
+> I want to add two keys, one is hello and another one is bye. their default values are Hello and Goodbye. both are in web platform. the project is spaceX 
 
 Cursor will automatically convert this to the correct input for the MCP tool.
+
+![Cursor MCP Lokalise Flow](https://i.postimg.cc/Yv6zT9Vj/Screenshot-2025-06-24-at-3-40-51-AM.png)
+
 
 ---
 ## 📁 Project Files
@@ -128,7 +136,7 @@ You can set up the MCP server in Cursor in two ways:
 {
   "mcpServers": {
     "lokalise": {
-      "command": "docker", // or "podman" if you use podman
+      "command": "docker", // or "podman"
       "args": [
         "run",
         "--rm",
@@ -160,3 +168,5 @@ You can set up the MCP server in Cursor in two ways:
 
 ## License
 MIT 
+
+
