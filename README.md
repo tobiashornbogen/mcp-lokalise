@@ -5,7 +5,7 @@ A Minimal Command-line Program (MCP) server for adding translation keys to your 
 ---
 ## 🖼️ MCP Flow Diagram
 
-![MCP Flow](https://i.postimg.cc/K32C6Nhw/Screenshot-2025-06-24-at-3-40-51-AM.png)
+![MCP Flow](./assets/flow.png)
 
 *This diagram illustrates the Model Context Protocol (MCP) flow between Cursor, your MCP server, and Lokalise.* 
 
@@ -58,7 +58,7 @@ This tool takes these inputs:
 
 Cursor will automatically convert this to the correct input for the MCP tool.
 
-![Cursor MCP Lokalise Flow](https://i.postimg.cc/Yv6zT9Vj/Screenshot-2025-06-24-at-3-40-51-AM.png)
+![Cursor MCP Lokalise Flow](./assets/result.png)
 
 
 ---
