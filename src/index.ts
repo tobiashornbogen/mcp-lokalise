@@ -1,6 +1,7 @@
 // Main exports
 export { parseCommand, findProjectIdByName, addKeysToProject, createLokaliseClient } from './mcp.js';
 export { LokaliseApiClient } from './lokalise-client.js';
+export { LokaliseMCPServer } from './mcp-server.js';
 
 // Type exports
 export type {

@@ -6,7 +6,7 @@ import 'dotenv/config';
 import { addKeysToProject } from './mcp.js';
 import type { MCPToolArguments, MCPToolResponse, Key } from './types.js';
 
-class LokaliseMCPServer {
+export class LokaliseMCPServer {
   private server: Server;
 
   constructor() {

@@ -1,9 +1,12 @@
 {
   "name": "lokalise-mcp-server",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A Model Context Protocol (MCP) server for managing Lokalise translation keys with TypeScript support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "lokalise-mcp-server": "dist/mcp-server.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,8 +20,8 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "start": "node dist/mcp-server.js",
-    "dev": "tsx src/mcp-server.ts",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
     "server": "tsx src/server.ts",
     "add-key": "tsx src/add-key.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,15 +1,15 @@
-# Use official Node.js LTS image
-FROM node:22-slim
+# Multi-stage build for better optimization
+FROM node:22-slim AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files first for better caching
 COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install all dependencies (including dev dependencies for building)
-RUN npm install
+RUN npm ci
 
 # Copy source code
 COPY src/ ./src/
@@ -17,11 +17,27 @@ COPY src/ ./src/
 # Build TypeScript to JavaScript
 RUN npm run build
 
-# Remove dev dependencies to reduce image size
-RUN npm prune --production
+# Production stage
+FROM node:22-slim AS production
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for production dependencies
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Copy built files from builder stage
+COPY --from=builder /app/dist ./dist
 
 # Copy other necessary files
 COPY README.md LICENSE ./
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+USER appuser
 
 # Expose port (if needed for HTTP server)
 EXPOSE 3000
