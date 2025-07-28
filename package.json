@@ -1,14 +1,47 @@
 {
   "name": "lokalise-mcp",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "A Model Context Protocol (MCP) server for managing Lokalise translation keys with TypeScript support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/mcp-server.d.ts",
+      "import": "./dist/mcp-server.js"
+    }
+  },
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/mcp-server.js",
+    "dev": "tsx src/mcp-server.ts",
+    "server": "tsx src/server.ts",
+    "add-key": "tsx src/add-key.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "lokalise",
+    "mcp",
+    "model-context-protocol",
+    "translation",
+    "i18n",
+    "typescript",
+    "cursor",
+    "api-client"
+  ],
+  "author": "mdrafee",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdrafee03/mcp-lokalise.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mdrafee03/mcp-lokalise/issues"
+  },
+  "homepage": "https://github.com/mdrafee03/mcp-lokalise#readme",
   "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
@@ -16,5 +49,17 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "inquirer": "^12.6.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/inquirer": "^9.0.8",
+    "@types/node": "^24.1.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   }
 }

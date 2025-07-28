@@ -64,15 +64,23 @@ Cursor will automatically convert this to the correct input for the MCP tool.
 ---
 ## 📁 Project Files
 
-- **mcp-server.js**: The main MCP server entry point for Cursor integration.
-- **mcp.js**: Shared logic for interacting with the Lokalise API (used by the server).
+**TypeScript Source Files (src/):**
+- **src/mcp-server.ts**: The main MCP server entry point for Cursor integration.
+- **src/mcp.ts**: Shared logic for interacting with the Lokalise API (used by the server).
+- **src/server.ts**: (Optional) HTTP server version (not required for Cursor).
+- **src/add-key.ts**: (Optional) CLI tool for adding a key interactively (not required for Cursor).
+
+**Compiled JavaScript Files (dist/):**
+- **dist/mcp-server.js**: Compiled MCP server.
+- **dist/mcp.js**: Compiled API logic.
+- **dist/server.js**: Compiled HTTP server.
+- **dist/add-key.js**: Compiled CLI tool.
+
+**Other Files:**
+- **tsconfig.json**: TypeScript configuration.
 - **Dockerfile**: For building the Docker image of the MCP server.
 - **package.json**: Project dependencies and scripts.
 - **README.md**: This documentation file.
-
-_You may also see:_
-- **add-key.js**: (Optional) CLI tool for adding a key interactively (not required for Cursor).
-- **server.js**: (Optional) HTTP server version (not required for Cursor).
 
 ---
 
@@ -89,7 +97,12 @@ cd mcp-lokalise
 npm install
 ```
 
-### 3. 🔑 Set Your Lokalise API Key
+### 3. 🔨 Build the Project
+```sh
+npm run build
+```
+
+### 4. 🔑 Set Your Lokalise API Key
 
 In your MCP config (recommended for Cursor)
 ```json
@@ -97,7 +110,7 @@ In your MCP config (recommended for Cursor)
   "mcpServers": {
     "lokalise": {
       "command": "node",
-      "args": ["{directory-of-the-project}/mcp-server.js"],
+      "args": ["{directory-of-the-project}/dist/mcp-server.js"],
       "env": {
         "LOKALISE_API_KEY": "your_actual_api_key"
       }
@@ -118,7 +131,7 @@ You can set up the MCP server in Cursor in two ways:
   "mcpServers": {
     "lokalise": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-server.js"],
+      "args": ["/absolute/path/to/dist/mcp-server.js"],
       "env": {
         "LOKALISE_API_KEY": "your_actual_api_key"
       }
@@ -126,7 +139,7 @@ You can set up the MCP server in Cursor in two ways:
   }
 }
 ```
-- Replace `/absolute/path/to/mcp-server.js` with the full path to your `mcp-server.js` file.
+- Replace `/absolute/path/to/dist/mcp-server.js` with the full path to your compiled `dist/mcp-server.js` file.
 - This runs the MCP server directly with Node.js.
 
 ---
@@ -161,7 +174,17 @@ You can set up the MCP server in Cursor in two ways:
 ---
 
 ## 🧑‍💻 Development
+
+### Available Scripts
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Run the MCP server in development mode with tsx
+- `npm run server` - Run the HTTP server in development mode with tsx
+- `npm run add-key` - Run the CLI tool in development mode with tsx
+- `npm start` - Run the compiled MCP server from dist/
+
+### Requirements
 - Node.js 22+ recommended
+- TypeScript 5.8+
 - MCP protocol via [@modelcontextprotocol/sdk](https://www.npmjs.com/package/@modelcontextprotocol/sdk)
 
 ---

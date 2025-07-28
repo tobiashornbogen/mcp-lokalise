@@ -4,8 +4,11 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import 'dotenv/config';
 import { addKeysToProject } from './mcp.js';
+import type { MCPToolArguments, MCPToolResponse, Key } from './types.js';
 
 class LokaliseMCPServer {
+  private server: Server;
+
   constructor() {
     this.server = new Server(
       {
@@ -22,7 +25,7 @@ class LokaliseMCPServer {
     this.setupToolHandlers();
   }
 
-  setupToolHandlers() {
+  private setupToolHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
@@ -54,6 +57,15 @@ class LokaliseMCPServer {
                         type: 'array',
                         items: { type: 'string' },
                         description: 'Platforms (web, ios, android, other). Optional.'
+                      },
+                      description: {
+                        type: 'string',
+                        description: 'Description for the key (optional)'
+                      },
+                      tags: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'Tags for the key (optional)'
                       }
                     },
                     required: ['keyName']
@@ -72,7 +84,7 @@ class LokaliseMCPServer {
 
       if (name === 'add_lokalise_keys') {
         try {
-          const { projectName, keys } = args;
+          const { projectName, keys } = args as unknown as MCPToolArguments;
           if (!projectName || !Array.isArray(keys) || keys.length === 0) {
             return {
               content: [
@@ -81,10 +93,21 @@ class LokaliseMCPServer {
                   text: 'Error: projectName and at least one key are required.'
                 }
               ]
-            };
+            } satisfies MCPToolResponse;
           }
 
           const apiKey = process.env.LOKALISE_API_KEY;
+          if (!apiKey) {
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: 'Error: LOKALISE_API_KEY environment variable is required.'
+                }
+              ]
+            } satisfies MCPToolResponse;
+          }
+
           const result = await addKeysToProject({ apiKey, projectName, keys });
           return {
             content: [
@@ -93,16 +116,17 @@ class LokaliseMCPServer {
                 text: `Successfully added ${keys.length} key(s) to project "${projectName}". Result: ${JSON.stringify(result, null, 2)}`
               }
             ]
-          };
+          } satisfies MCPToolResponse;
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
           return {
             content: [
               {
                 type: 'text',
-                text: `Error: ${error.message}`
+                text: `Error: ${errorMessage}`
               }
             ]
-          };
+          } satisfies MCPToolResponse;
         }
       }
 
@@ -110,7 +134,7 @@ class LokaliseMCPServer {
     });
   }
 
-  async run() {
+  async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('Lokalise MCP server started');
@@ -118,4 +142,4 @@ class LokaliseMCPServer {
 }
 
 const server = new LokaliseMCPServer();
-server.run().catch(console.error); 
+server.run().catch(console.error);
