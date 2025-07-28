@@ -2,6 +2,18 @@
 
 A Minimal Command-line Program (MCP) server for adding translation keys to your Lokalise projects, designed for integration with [Cursor](https://www.cursor.so/) or standalone use.
 
+## 📦 Installation
+
+```bash
+# For MCP usage (global installation)
+npm install -g lokalise-mcp-server
+
+# For library usage (project dependency)
+npm install lokalise-mcp-server
+```
+
+**NPM Package**: https://www.npmjs.com/package/lokalise-mcp-server
+
 ---
 ## 🖼️ MCP Flow Diagram
 
@@ -10,6 +22,32 @@ A Minimal Command-line Program (MCP) server for adding translation keys to your 
 *This diagram illustrates the Model Context Protocol (MCP) flow between Cursor, your MCP server, and Lokalise.* 
 
 ## ⚡️ Usage (Quick Start with Cursor MCP)
+
+### **Option 1: NPM Package (Recommended)**
+
+1. 📦 Install the package globally:
+   ```bash
+   npm install -g lokalise-mcp-server
+   ```
+
+2. 🛠️ Add this to your `mcp.json` (or configure via Cursor UI):
+   ```json
+   {
+     "mcpServers": {
+       "lokalise": {
+         "command": "npx",
+         "args": ["lokalise-mcp-server"],
+         "env": {
+           "LOKALISE_API_KEY": "your_actual_api_key"
+         }
+       }
+     }
+   }
+   ```
+
+3. 🔄 **Restart Cursor.** It will automatically use the npm package.
+
+### **Option 2: Docker (Alternative)**
 
 **No need to run Docker or Podman manually!**
 
@@ -123,9 +161,27 @@ In your MCP config (recommended for Cursor)
 
 ## 🐳 MCP Server Setup Options for Cursor
 
-You can set up the MCP server in Cursor in two ways:
+You can set up the MCP server in Cursor in three ways:
 
-### Option 1: Node.js (Direct Script)
+### Option 1: NPM Package (Easiest)
+```json
+{
+  "mcpServers": {
+    "lokalise": {
+      "command": "npx",
+      "args": ["lokalise-mcp-server"],
+      "env": {
+        "LOKALISE_API_KEY": "your_actual_api_key"
+      }
+    }
+  }
+}
+```
+- First install globally: `npm install -g lokalise-mcp-server`
+- Uses the published npm package directly
+- No Docker or local setup required
+
+### Option 2: Node.js (Direct Script)
 ```json
 {
   "mcpServers": {
@@ -142,9 +198,7 @@ You can set up the MCP server in Cursor in two ways:
 - Replace `/absolute/path/to/dist/mcp-server.js` with the full path to your compiled `dist/mcp-server.js` file.
 - This runs the MCP server directly with Node.js.
 
----
-
-### Option 2: Docker (or Podman)
+### Option 3: Docker (or Podman)
 ```json
 {
   "mcpServers": {
@@ -173,27 +227,60 @@ You can set up the MCP server in Cursor in two ways:
 
 ---
 
-## 🐳 Docker Usage
+## 📚 Using as a Node.js Library
 
-### Using Pre-built Image from Docker Hub
+Install the package as a dependency in your project:
 ```bash
-# Run MCP server
-podman run --rm -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest
-
-# Run HTTP server
-podman run --rm -p 3000:3000 -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest node dist/server.js
-
-# Run CLI tool interactively
-podman run --rm -it -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest node dist/add-key.js
+npm install lokalise-mcp-server
 ```
 
-### Building Locally
-```bash
-# Build the image
-podman build -t lokalise-mcp .
+### **API Client Usage:**
+```typescript
+import { LokaliseApiClient, createLokaliseClient } from 'lokalise-mcp-server';
 
-# Run locally built image
-podman run --rm -e LOKALISE_API_KEY=your_key lokalise-mcp:latest
+// Option 1: Direct instantiation
+const client = new LokaliseApiClient('your-api-key');
+
+// Option 2: Using the convenience function (uses env var if no key provided)
+const client = createLokaliseClient(); // Uses LOKALISE_API_KEY env var
+const client = createLokaliseClient('your-api-key'); // Uses provided key
+
+// API usage examples
+const projects = await client.getProjects();
+const project = await client.findProjectByName('My Project');
+const result = await client.createKeys(project.project_id, {
+  keys: [
+    {
+      key_name: 'hello_world',
+      platforms: ['web'],
+      translations: [{ language_iso: 'en', translation: 'Hello World' }]
+    }
+  ]
+});
+```
+
+### **MCP Server Integration:**
+```typescript
+import { LokaliseMCPServer } from 'lokalise-mcp-server/server';
+
+// Create and run your own MCP server instance
+const server = new LokaliseMCPServer();
+await server.run();
+```
+
+### **Utility Functions:**
+```typescript
+import { parseCommand, addKeysToProject } from 'lokalise-mcp-server';
+
+// Parse natural language commands
+const parsed = parseCommand('project name is "MyApp". Add key hello with value "Hello World"');
+
+// Add keys directly
+const result = await addKeysToProject({
+  apiKey: 'your-api-key',
+  projectName: 'MyApp',
+  keys: [{ keyName: 'hello', defaultValue: 'Hello World' }]
+});
 ```
 
 ---
