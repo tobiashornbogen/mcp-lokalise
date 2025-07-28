@@ -26,7 +26,7 @@ A Minimal Command-line Program (MCP) server for adding translation keys to your 
            "--rm",
            "-i",
            "-e", "LOKALISE_API_KEY",
-           "rafee03/mcp-lokalise:latest"
+           "mdrafee03/lokalise-mcp:latest"
          ],
          "env": {
            "LOKALISE_API_KEY": "your_actual_api_key"
@@ -155,7 +155,7 @@ You can set up the MCP server in Cursor in two ways:
         "--rm",
         "-i",
         "-e", "LOKALISE_API_KEY",
-        "rafee03/mcp-lokalise:latest"
+        "mdrafee03/lokalise-mcp:latest"
       ],
       "env": {
         "LOKALISE_API_KEY": "your_actual_api_key"
@@ -170,6 +170,31 @@ You can set up the MCP server in Cursor in two ways:
 ---
 
 **💡 Note:** Both options require you to set your Lokalise API key in the `env` section. Cursor will handle starting the MCP server for you.
+
+---
+
+## 🐳 Docker Usage
+
+### Using Pre-built Image from Docker Hub
+```bash
+# Run MCP server
+podman run --rm -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest
+
+# Run HTTP server
+podman run --rm -p 3000:3000 -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest node dist/server.js
+
+# Run CLI tool interactively
+podman run --rm -it -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest node dist/add-key.js
+```
+
+### Building Locally
+```bash
+# Build the image
+podman build -t lokalise-mcp .
+
+# Run locally built image
+podman run --rm -e LOKALISE_API_KEY=your_key lokalise-mcp:latest
+```
 
 ---
 
