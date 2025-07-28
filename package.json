@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/mcp-server.js",
     "dev": "tsx src/mcp-server.ts",
     "server": "tsx src/server.ts",
@@ -43,6 +44,14 @@
   },
   "homepage": "https://github.com/mdrafee03/mcp-lokalise#readme",
   "type": "module",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
     "axios": "^1.10.0",
