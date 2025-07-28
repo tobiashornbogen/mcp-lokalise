@@ -26,7 +26,7 @@ A Minimal Command-line Program (MCP) server for adding translation keys to your 
            "--rm",
            "-i",
            "-e", "LOKALISE_API_KEY",
-           "mdrafee03/lokalise-mcp:latest"
+           "rafee03/mcp-lokalise:latest"
          ],
          "env": {
            "LOKALISE_API_KEY": "your_actual_api_key"
@@ -155,7 +155,7 @@ You can set up the MCP server in Cursor in two ways:
         "--rm",
         "-i",
         "-e", "LOKALISE_API_KEY",
-        "mdrafee03/lokalise-mcp:latest"
+        "rafee03/mcp-lokalise:latest"
       ],
       "env": {
         "LOKALISE_API_KEY": "your_actual_api_key"
@@ -178,13 +178,13 @@ You can set up the MCP server in Cursor in two ways:
 ### Using Pre-built Image from Docker Hub
 ```bash
 # Run MCP server
-podman run --rm -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest
+podman run --rm -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest
 
 # Run HTTP server
-podman run --rm -p 3000:3000 -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest node dist/server.js
+podman run --rm -p 3000:3000 -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest node dist/server.js
 
 # Run CLI tool interactively
-podman run --rm -it -e LOKALISE_API_KEY=your_key mdrafee03/lokalise-mcp:latest node dist/add-key.js
+podman run --rm -it -e LOKALISE_API_KEY=your_key rafee03/mcp-lokalise:latest node dist/add-key.js
 ```
 
 ### Building Locally
