@@ -1,5 +1,5 @@
 {
-  "name": "lokalise-mcp",
+  "name": "@mdrafee/lokalise-mcp",
   "version": "1.0.1",
   "description": "A Model Context Protocol (MCP) server for managing Lokalise translation keys with TypeScript support",
   "main": "dist/index.js",
