@@ -1,5 +1,5 @@
 {
-  "name": "lokalise-mcp-server",
+  "name": "@tobiashornbogen/lokalise-mcp-server",
   "version": "1.0.3",
   "description": "A Model Context Protocol (MCP) server for managing Lokalise translation keys with TypeScript support",
   "main": "dist/index.js",
@@ -36,16 +36,16 @@
     "cursor",
     "api-client"
   ],
-  "author": "mdrafee",
+  "author": "tobiashornbogen",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mdrafee03/mcp-lokalise.git"
+    "url": "https://github.com/tobiashornbogen/mcp-lokalise.git"
   },
   "bugs": {
-    "url": "https://github.com/mdrafee03/mcp-lokalise/issues"
+    "url": "https://github.com/tobiashornbogen/mcp-lokalise/issues"
   },
-  "homepage": "https://github.com/mdrafee03/mcp-lokalise#readme",
+  "homepage": "https://github.com/tobiashornbogen/mcp-lokalise#readme",
   "type": "module",
   "files": [
     "dist/**/*",

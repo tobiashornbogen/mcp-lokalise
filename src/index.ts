@@ -1,7 +1,16 @@
 // Main exports
-export { parseCommand, findProjectIdByName, addKeysToProject, createLokaliseClient } from './mcp.js';
-export { LokaliseApiClient } from './lokalise-client.js';
-export { LokaliseMCPServer } from './mcp-server.js';
+export {
+  parseCommand,
+  findProjectIdByName,
+  addKeysToProject,
+  createLokaliseClient,
+  updateKeysInProject,
+  deleteKeysFromProject,
+  manageTranslations,
+  searchKeysInProject,
+} from "./mcp.js";
+export { LokaliseApiClient } from "./lokalise-client.js";
+export { LokaliseMCPServer } from "./mcp-server.js";
 
 // Type exports
 export type {
@@ -20,7 +29,38 @@ export type {
   MCPToolResponse,
   MCPErrorResponse,
   MCPSuccessResponse,
-  Platform
-} from './types.js';
+  Platform,
+  ExistingKey,
+  KeysResponse,
+  UpdateKeyRequest,
+  UpdateKeysRequest,
+  UpdatedKey,
+  UpdateKeysResponse,
+  DeleteKeysRequest,
+  DeleteKeysResponse,
+  TranslationDetails,
+  TranslationsResponse,
+  UpdateTranslationRequest,
+  UpdateKey,
+  DeleteKey,
+  ManageTranslation,
+  UpdateKeysParams,
+  DeleteKeysParams,
+  ManageTranslationsParams,
+  MCPUpdateToolArguments,
+  MCPDeleteToolArguments,
+  MCPTranslationToolArguments,
+  SupportedLanguage,
+  SearchCriteria,
+  SearchResult,
+  SearchResponse,
+  SearchKeysParams,
+  MCPSearchToolArguments,
+  TranslationStatus,
+} from "./types.js";
 
-export { ALLOWED_PLATFORMS } from './types.js';
+export {
+  ALLOWED_PLATFORMS,
+  SUPPORTED_LANGUAGES,
+  TRANSLATION_STATUSES,
+} from "./types.js";
