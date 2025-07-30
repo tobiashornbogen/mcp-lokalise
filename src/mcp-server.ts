@@ -12,6 +12,7 @@ import {
   deleteKeysFromProject,
   manageTranslations,
   searchKeysInProject,
+  searchAvailableProjects,
 } from "./mcp.js";
 import type {
   MCPToolArguments,
@@ -20,6 +21,7 @@ import type {
   MCPDeleteToolArguments,
   MCPTranslationToolArguments,
   MCPSearchToolArguments,
+  MCPSearchProjectsToolArguments,
 } from "./types.js";
 
 export class LokaliseMCPServer {
@@ -316,6 +318,22 @@ export class LokaliseMCPServer {
               required: ["projectName", "criteria"],
             },
           },
+          {
+            name: "search_available_projects",
+            description:
+              "Search for available Lokalise projects that you have access to",
+            inputSchema: {
+              type: "object",
+              properties: {
+                searchTerm: {
+                  type: "string",
+                  description:
+                    "Optional search term to filter projects by name or description",
+                },
+              },
+              required: [],
+            },
+          },
         ],
       };
     });
@@ -522,6 +540,37 @@ export class LokaliseMCPServer {
 🎯 Criteria used: ${JSON.stringify(result.criteria_used, null, 2)}
 
 ${formattedResults.join("\n\n")}`;
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: summary,
+              },
+            ],
+          } satisfies MCPToolResponse;
+        }
+
+        if (name === "search_available_projects") {
+          const { searchTerm } =
+            args as unknown as MCPSearchProjectsToolArguments;
+
+          const projects = await searchAvailableProjects(apiKey, searchTerm);
+
+          // Format the results for better readability
+          const formattedProjects = projects.map((project) => {
+            return `📁 ${project.name}
+📝 ${project.description || "No description"}
+🆔 ${project.project_id}
+👤 Created by: ${project.created_by_email}
+📅 Created: ${project.created_at}`;
+          });
+
+          const summary = `
+🔍 Available Projects${searchTerm ? ` (filtered by: "${searchTerm}")` : ""}
+📊 Found ${projects.length} project(s)
+
+${formattedProjects.join("\n\n")}`;
 
           return {
             content: [

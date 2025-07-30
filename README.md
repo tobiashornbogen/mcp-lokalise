@@ -195,7 +195,7 @@ Currently supports **German (`de`)** and **English (`en`)** with the infrastruct
 - ✅ **Update** key properties and translations
 - ✅ **Delete** unwanted keys
 
-### **🔍 Advanced Search & Discovery** ⭐ **NEW!**
+### **🔍 Advanced Search & Discovery**
 
 - ✅ **Pattern-based search** - Find keys by partial name matches
 - ✅ **Multi-criteria filtering** - Combine tags, platforms, status, dates

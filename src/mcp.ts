@@ -19,6 +19,7 @@ import type {
   SearchKeysParams,
   SearchResponse,
   SearchCriteria,
+  ProjectData,
 } from "./types.js";
 import { ALLOWED_PLATFORMS, SUPPORTED_LANGUAGES } from "./types.js";
 
@@ -81,6 +82,13 @@ export async function addKeysToProject({
     throw new Error("Missing projectName or keys.");
   }
 
+  // Validate key names are not empty
+  for (const key of keys) {
+    if (!key.keyName || key.keyName.trim().length === 0) {
+      throw new Error("Key name cannot be empty or contain only whitespace.");
+    }
+  }
+
   const client = createLokaliseClient(apiKey);
   const project = await client.findProjectByName(projectName);
   if (!project) {
@@ -97,7 +105,11 @@ export async function addKeysToProject({
           : [...ALLOWED_PLATFORMS];
 
       if (usedPlatforms.length === 0) {
-        throw new Error("No valid platforms specified for key: " + keyName);
+        throw new Error(
+          `No valid platforms specified for key: ${keyName}. Valid platforms are: ${ALLOWED_PLATFORMS.join(
+            ", "
+          )}`
+        );
       }
 
       const payload: KeyPayload = {
@@ -126,7 +138,16 @@ export async function addKeysToProject({
     }
   );
 
-  return await client.createKeys(project.project_id, { keys: keyPayloads });
+  try {
+    return await client.createKeys(project.project_id, { keys: keyPayloads });
+  } catch (error: any) {
+    if (error.response?.status === 400) {
+      throw new Error(
+        `Invalid key data: ${error.response?.data?.message || error.message}`
+      );
+    }
+    throw error;
+  }
 }
 
 /**
@@ -375,13 +396,21 @@ export async function searchKeysInProject({
     throw new Error("Missing projectName or search criteria.");
   }
 
+  // Validate limit parameter
+  if (limit <= 0) {
+    throw new Error("Limit must be a positive number greater than 0.");
+  }
+  if (limit > 200) {
+    limit = 200; // Cap at maximum allowed
+  }
+
   const client = createLokaliseClient(apiKey);
   const project = await client.findProjectByName(projectName);
   if (!project) {
     throw new Error(`Project named "${projectName}" not found.`);
   }
 
-  // Validate search criteria
+  // Validate search criteria with warnings
   const validatedCriteria = validateSearchCriteria(criteria);
 
   // Perform the search
@@ -401,24 +430,91 @@ export async function searchKeysInProject({
 }
 
 /**
+ * Search for available projects
+ */
+export async function searchAvailableProjects(
+  apiKey: string,
+  searchTerm?: string
+): Promise<ProjectData[]> {
+  if (!apiKey) {
+    throw new Error("LOKALISE_API_KEY not set in .env file or input.");
+  }
+
+  const client = createLokaliseClient(apiKey);
+  let page = 1;
+  let allProjects: ProjectData[] = [];
+
+  // Get all projects with pagination
+  while (true) {
+    const data = await client.getProjects(page, 100);
+    const projects = data.projects;
+
+    if (projects.length === 0) break;
+
+    allProjects = allProjects.concat(projects);
+
+    if (projects.length < 100) break; // No more pages
+    page++;
+  }
+
+  // Filter by search term if provided
+  if (searchTerm && searchTerm.trim().length > 0) {
+    const term = searchTerm.toLowerCase().trim();
+    allProjects = allProjects.filter(
+      (project) =>
+        project.name.toLowerCase().includes(term) ||
+        (project.description &&
+          project.description.toLowerCase().includes(term))
+    );
+  }
+
+  return allProjects;
+}
+
+/**
  * Validate and normalize search criteria
  */
 function validateSearchCriteria(criteria: SearchCriteria): SearchCriteria {
   const validated: SearchCriteria = { ...criteria };
+  const warnings: string[] = [];
 
   // Validate platforms
   if (validated.platforms && validated.platforms.length > 0) {
+    const originalPlatforms = [...validated.platforms];
     validated.platforms = validated.platforms.filter((p): p is Platform =>
       ALLOWED_PLATFORMS.includes(p as Platform)
     );
+
+    const invalidPlatforms = originalPlatforms.filter(
+      (p) => !ALLOWED_PLATFORMS.includes(p as Platform)
+    );
+    if (invalidPlatforms.length > 0) {
+      console.warn(
+        `Invalid platforms ignored: ${invalidPlatforms.join(
+          ", "
+        )}. Valid platforms: ${ALLOWED_PLATFORMS.join(", ")}`
+      );
+    }
   }
 
   // Validate languages
   if (validated.languages && validated.languages.length > 0) {
+    const originalLanguages = [...validated.languages];
     validated.languages = validated.languages.filter(
       (l): l is SupportedLanguage =>
         SUPPORTED_LANGUAGES.includes(l as SupportedLanguage)
     );
+
+    const invalidLanguages = originalLanguages.filter(
+      (l) => !SUPPORTED_LANGUAGES.includes(l as SupportedLanguage)
+    );
+    if (invalidLanguages.length > 0) {
+      console.warn(
+        `Invalid languages ignored: ${invalidLanguages.join(
+          ", "
+        )}. Supported languages: ${SUPPORTED_LANGUAGES.join(", ")}`
+      );
+    }
   } else {
     // Default to supported languages if none specified
     validated.languages = [...SUPPORTED_LANGUAGES];
@@ -431,14 +527,20 @@ function validateSearchCriteria(criteria: SearchCriteria): SearchCriteria {
       validated.translationStatus
     )
   ) {
+    console.warn(
+      `Invalid translation status ignored: ${validated.translationStatus}. Valid values: translated, untranslated, fuzzy, reviewed, any`
+    );
     delete validated.translationStatus;
   }
 
-  // Validate dates
+  // Validate dates with better error messages
   if (validated.createdAfter) {
     try {
       new Date(validated.createdAfter);
     } catch {
+      console.warn(
+        `Invalid createdAfter date ignored: ${validated.createdAfter}. Use ISO format like: 2024-01-01`
+      );
       delete validated.createdAfter;
     }
   }
@@ -447,6 +549,9 @@ function validateSearchCriteria(criteria: SearchCriteria): SearchCriteria {
     try {
       new Date(validated.createdBefore);
     } catch {
+      console.warn(
+        `Invalid createdBefore date ignored: ${validated.createdBefore}. Use ISO format like: 2024-12-31`
+      );
       delete validated.createdBefore;
     }
   }
@@ -455,6 +560,9 @@ function validateSearchCriteria(criteria: SearchCriteria): SearchCriteria {
     try {
       new Date(validated.modifiedAfter);
     } catch {
+      console.warn(
+        `Invalid modifiedAfter date ignored: ${validated.modifiedAfter}. Use ISO format like: 2024-01-01`
+      );
       delete validated.modifiedAfter;
     }
   }
@@ -463,6 +571,9 @@ function validateSearchCriteria(criteria: SearchCriteria): SearchCriteria {
     try {
       new Date(validated.modifiedBefore);
     } catch {
+      console.warn(
+        `Invalid modifiedBefore date ignored: ${validated.modifiedBefore}. Use ISO format like: 2024-12-31`
+      );
       delete validated.modifiedBefore;
     }
   }

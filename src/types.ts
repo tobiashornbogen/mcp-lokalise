@@ -111,7 +111,8 @@ export interface UpdateKeysResponse {
 
 export interface DeleteKeysResponse {
   project_id: string;
-  keys_removed: number;
+  keys_removed: boolean; // API actually returns boolean, not number
+  keys_locked?: number;
   errors?: Array<{
     message: string;
     code: number;
@@ -298,6 +299,10 @@ export interface MCPSearchToolArguments {
   projectName: string;
   criteria: SearchCriteria;
   limit?: number;
+}
+
+export interface MCPSearchProjectsToolArguments {
+  searchTerm?: string;
 }
 
 export interface MCPToolResponse {

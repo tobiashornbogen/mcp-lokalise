@@ -8,6 +8,7 @@ export {
   deleteKeysFromProject,
   manageTranslations,
   searchKeysInProject,
+  searchAvailableProjects,
 } from "./mcp.js";
 export { LokaliseApiClient } from "./lokalise-client.js";
 export { LokaliseMCPServer } from "./mcp-server.js";
@@ -56,6 +57,7 @@ export type {
   SearchResponse,
   SearchKeysParams,
   MCPSearchToolArguments,
+  MCPSearchProjectsToolArguments,
   TranslationStatus,
 } from "./types.js";
 

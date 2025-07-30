@@ -154,20 +154,23 @@ export class LokaliseApiClient {
       | { key_id: number; key_name: string | { [platform: string]: string } }
       | undefined = undefined;
 
+    // Helper function to get key name as string (same logic as search function)
+    const getKeyNameString = (keyNameObj: any): string => {
+      if (typeof keyNameObj === "string") return keyNameObj;
+      if (typeof keyNameObj === "object" && keyNameObj !== null) {
+        return Object.values(keyNameObj)[0] as string; // Use first platform name
+      }
+      return "";
+    };
+
     while (!found) {
       const data = await this.getKeys(projectId, page, 100, false);
       const keys = data.keys;
 
-      // Handle both string and object key_name formats from Lokalise API
+      // Use consistent key name comparison logic
       found = keys.find((k) => {
-        if (typeof k.key_name === "string") {
-          return k.key_name === keyName;
-        } else if (typeof k.key_name === "object" && k.key_name !== null) {
-          // Check if any platform has the matching key name
-          const keyNameObj = k.key_name as any;
-          return Object.values(keyNameObj).includes(keyName);
-        }
-        return false;
+        const keyNameString = getKeyNameString(k.key_name);
+        return keyNameString === keyName;
       });
 
       if (found || keys.length < 100) break;
@@ -338,6 +341,9 @@ export class LokaliseApiClient {
       } else {
         matches = false;
       }
+    } else if (criteria.translationStatus === "any") {
+      // Add reason for "any" status to avoid empty match reasons
+      reasons.push("Matches any translation status");
     }
 
     // Date filtering
@@ -359,6 +365,11 @@ export class LokaliseApiClient {
       } else {
         matches = false;
       }
+    }
+
+    // If no specific criteria were set but the key matches, add a general reason
+    if (matches && reasons.length === 0) {
+      reasons.push("Matches general criteria");
     }
 
     return { matches, reasons };
