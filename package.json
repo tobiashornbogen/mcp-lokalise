@@ -24,7 +24,11 @@
     "dev": "tsx src/index.ts",
     "server": "tsx src/server.ts",
     "add-key": "tsx src/add-key.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testPathPatterns=integration",
+    "test:unit": "jest --testPathPatterns=unit"
   },
   "keywords": [
     "lokalise",
@@ -63,9 +67,13 @@
     "inquirer": "^12.6.3"
   },
   "devDependencies": {
+    "@jest/globals": "^30.0.5",
     "@types/express": "^5.0.3",
     "@types/inquirer": "^9.0.8",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.1.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

@@ -24,4 +24,14 @@ Thumbs.db
 /build
 
 # VSCode
-.vscode/ 
+.vscode/
+
+# Testing
+coverage/
+*.lcov
+.nyc_output/
+junit.xml
+
+# Jest
+jest-results.xml
+test-results.xml 
